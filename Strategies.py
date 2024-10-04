@@ -99,7 +99,10 @@ def thompson_sampling(drug_performance):
     return beta_predicts.index(max(beta_predicts))
 
 
-strategies = [("greedy_number",greedy_number_of_success),("greedy_rate",greedy_rate_of_success),("beta_strategy",beta_strategy),("beta_with_naive_exploration",beta_strategy_with_naive_exploration),
+strategies = [("greedy_number",greedy_number_of_success),
+              ("greedy_rate",greedy_rate_of_success),
+              ("beta_strategy",beta_strategy),
+              ("beta_with_naive_exploration",beta_strategy_with_naive_exploration),
               ("thompson_sampling",thompson_sampling)]
 
 def cdf_to_pdf(cdf):
