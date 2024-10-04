@@ -1,7 +1,5 @@
 import random
 
-
-# Define a class for the game
 class DoctorGame:
     def __init__(self, drug_names):
         """
@@ -18,73 +16,83 @@ class DoctorGame:
         }
         self.total_success_count = 0
         self.total_failure_count = 0
+        self.round_history = []  # Store the history of all rounds without success rate info
 
-    def treat_patient(self):
+    def treat_patient(self, drug_choice):
         """
-        Allow the doctor to treat a patient by selecting a drug, and update the score based on the outcome.
+        Treat a patient by selecting a drug based on the provided choice, and update the score.
+        Return the outcome of the treatment without revealing the success rate.
         """
-        print("\nWelcome, doctor! You have the following drugs to choose from:")
-
-        # List the drugs with their chances of success
-        for i, (drug, stats) in enumerate(self.drugs.items(), 1):
-            print(f"{i}. {drug} (Effective treatments: {stats['success_count']}) (Ineffective treatments: {stats['failure_count']})")
-
-        # Get the doctor's choice
-        choice = int(input(f"Choose a drug (1-{len(self.drugs)}): "))
-        drug_list = list(self.drugs.keys())
-        # Get the selected drug and its success chance
-        selected_drug = drug_list[choice - 1]
+        selected_drug = list(self.drugs.keys())[drug_choice - 1]
         success_chance = self.drugs[selected_drug]["success_rate"]
 
         # Determine if the treatment was successful
         if random.random() <= success_chance:
-            print(f"Success! The patient was cured using {selected_drug}.")
             self.drugs[selected_drug]["success_count"] += 1
             self.total_success_count += 1
+            result = True  # Treatment was successful
         else:
-            print(f"Failure! The patient was not cured using {selected_drug}.")
             self.drugs[selected_drug]["failure_count"] += 1
             self.total_failure_count += 1
+            result = False  # Treatment failed
 
-        # Display current score
-        self.display_score()
+        # Append round info (drug name and result) without the success rate to the history
+        round_info = {'drug': selected_drug, 'result': result}
+        self.round_history.append(round_info)
 
-    def display_score(self):
+        return round_info
+
+    def get_round_history(self):
         """
-        Display the current score of successful and failed treatments for each drug.
+        Return the history of all rounds without the success rate.
         """
-        print(f"\nTotal Score: {self.total_success_count} successes, {self.total_failure_count} failures.")
-        print("Drug performance:")
+        return self.round_history
+
+    def get_drug_performance(self):
+        """
+        Return the success and failure counts for each drug.
+        """
+        return {drug: {'success_count': stats['success_count'], 'failure_count': stats['failure_count']}
+                for drug, stats in self.drugs.items()}
+
+    def display_drug_success_rates(self):
+        """
+        Display the success rates for each drug.
+        """
+        print("\nDrug Success Rates:")
         for drug, stats in self.drugs.items():
-            print(f"{drug}: {stats['success_count']} successes, {stats['failure_count']} failures.")
+            total_attempts = stats["success_count"] + stats["failure_count"]
+            print(f"{drug}: {stats['success_rate'] * 100:.2f}% success rate ({stats['success_count']} successes, {stats['failure_count']} failures)")
 
-    def play_game(self):
+
+    def play_game_cli(self, num_patients):
         """
-        Run the entire game loop for a set number of patients.
+        Play the game interactively via command line input.
         """
-        # Ask the player how many patients they want to treat
-        num_patients = int(input("How many patients would you like to treat in this playthrough? "))
+        for i in range(num_patients):
+            print("\nWelcome, doctor! You have the following drugs to choose from:")
+            for j, (drug, stats) in enumerate(self.drugs.items(), 1):
+                print(f"{j}. {drug} (Effective Treatments: {stats['success_count']}, Ineffective Treatments: {stats['failure_count']})")
 
-        # Run the game loop for the specified number of patients
-        for _ in range(num_patients):
-            self.treat_patient()
+            choice = int(input(f"Choose a drug (1-{len(self.drugs)}): "))
+            result_info = self.treat_patient(choice)
+            print(f"Patient {i+1}: {'Success' if result_info['result'] else 'Failure'} with {result_info['drug']}")
 
-        # Display the final score after all patients have been treated
+        # Display final score and drug success rates
         print(f"\nFinal Score: {self.total_success_count} successes, {self.total_failure_count} failures.")
-        print("Goodbye, doctor!")
+        self.display_drug_success_rates()
 
-        # Display the Success rate for each drug
-        for i, (drug, stats) in enumerate(self.drugs.items(), 1):
-            print(f"{i}. {drug} (Success Rate: {stats['success_rate'] * 100:.2f}%)")
+    def play_game_script(self, num_patients, choice_function):
+        """
+        Play the game programmatically. For each patient, the script dynamically makes a choice based on
+        all previous rounds using the passed 'choice_function'.
+        """
+        for i in range(num_patients):
+            # Let the script decide the drug choice for each patient based on round history and drug performance
+            drug_choice = choice_function(self.get_drug_performance())  # Provide round history and drug performance to the script
+            result_info = self.treat_patient(drug_choice)
+            print(f"Patient {i+1}: {'Success' if result_info['result'] else 'Failure'} with {result_info['drug']}")
 
-
-
-# Define a list of drug names
-
-drug_names = ["Drug A", "Drug B", "Drug C", "Drug D", "Drug E"]
-
-# Create an instance of the game
-game = DoctorGame(drug_names)
-
-# Start the game
-game.play_game()
+        # Display final score and drug success rates
+        print(f"\nFinal Score: {self.total_success_count} successes, {self.total_failure_count} failures.")
+        self.display_drug_success_rates()
