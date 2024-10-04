@@ -82,7 +82,7 @@ class DoctorGame:
         print(f"\nFinal Score: {self.total_success_count} successes, {self.total_failure_count} failures.")
         self.display_drug_success_rates()
 
-    def play_game_script(self, num_patients, choice_function):
+    def play_game_script(self, num_patients, choice_function,with_feedback=False):
         """
         Play the game programmatically. For each patient, the script dynamically makes a choice based on
         all previous rounds using the passed 'choice_function'.
@@ -91,7 +91,8 @@ class DoctorGame:
             # Let the script decide the drug choice for each patient based on round history and drug performance
             drug_choice = choice_function(self.get_drug_performance())  # Provide round history and drug performance to the script
             result_info = self.treat_patient(drug_choice)
-        self.display_drug_success_rates()
+        if(with_feedback):
+            self.display_drug_success_rates()
         return self.total_success_count, self.total_failure_count, self.total_success_count / (
                     self.total_success_count + self.total_failure_count)
 
