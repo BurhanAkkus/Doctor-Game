@@ -91,7 +91,16 @@ def beta_strategy_with_naive_exploration(drug_performance):
                 best_drug_index = drug_index
     return best_drug_index
 
-strategies = [("greedy_number",greedy_number_of_success),("greedy_rate",greedy_rate_of_success),("beta_strategy",beta_strategy),("beta_with_naive_exploration",beta_strategy_with_naive_exploration)]
+def thompson_sampling(drug_performance):
+    beta_predicts = []
+    for drug_name in drug_performance:
+        drug = drug_performance[drug_name]
+        beta_predicts.append(beta.rvs(drug['success_count'] + 1,drug['failure_count'] + 1,size=1)[0])
+    return beta_predicts.index(max(beta_predicts))
+
+
+strategies = [("greedy_number",greedy_number_of_success),("greedy_rate",greedy_rate_of_success),("beta_strategy",beta_strategy),("beta_with_naive_exploration",beta_strategy_with_naive_exploration),
+              ("thompson_sampling",thompson_sampling)]
 
 def cdf_to_pdf(cdf):
     size = len(cdf)
