@@ -1,19 +1,29 @@
 import random
 
 class DoctorGame:
-    def __init__(self, drug_names):
+    def __init__(self, drug_names,rates=None):
         """
         Initialize the game with a list of drug names and randomly assign success probabilities,
         along with success and failure counters for each drug.
         """
-        self.drugs = {
-            drug: {
-                "success_rate": random.uniform(0.1, 0.9),
-                "success_count": 0,
-                "failure_count": 0
+        if rates is None:
+            self.drugs = {
+                drug: {
+                    "success_rate": rates[drug_index],
+                    "success_count": 0,
+                    "failure_count": 0
+                }
+                for drug_index,drug in enumerate(drug_names)
             }
-            for drug in drug_names
-        }
+        else:
+            self.drugs = {
+                drug: {
+                    "success_rate": random.uniform(0.1, 0.9),
+                    "success_count": 0,
+                    "failure_count": 0
+                }
+                for drug in drug_names
+            }
         self.total_success_count = 0
         self.total_failure_count = 0
         self.round_history = []  # Store the history of all rounds without success rate info
