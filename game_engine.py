@@ -80,6 +80,7 @@ class DoctorGame:
 
 
 # Define a list of drug names
+
 drug_names = ["Drug A", "Drug B", "Drug C", "Drug D", "Drug E"]
 
 # Create an instance of the game
