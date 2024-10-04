@@ -13,6 +13,7 @@ def play_the_game(strategy):
     num_patients = 50
     game_result = game.play_game_script(num_patients, strategy)
     print_result(game_result)
+    return game_result
 
 
 print("Please choose your strategy:\n")
