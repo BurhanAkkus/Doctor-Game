@@ -58,3 +58,45 @@ def beta_strategy(drug_performance):
                 best_beta_pdf = cdf_to_pdf(beta.cdf(x,best_beta_params[0],best_beta_params[1]))
                 best_drug_index = drug_index
     return best_drug_index
+
+def beta_strategy_with_naive_exploration(drug_performance):
+    for i, drug_name in enumerate(drug_performance):
+        drug = drug_performance[drug_name]
+        if drug['success_count'] == 0 and drug['failure_count'] == 0:
+            return i  # Choose an untried drug
+    best_beta_params = None
+    resolution = 100
+    x = np.linspace(0, 1, resolution)
+    dx = 1 / resolution
+    best_drug_index = -1
+    for drug_index,drug_name in enumerate(drug_performance):
+        drug = drug_performance[drug_name]
+        if(best_beta_params == None):
+            best_beta_params = drug['success_count'] + 1, drug['failure_count'] + 1
+            best_beta_pdf = cdf_to_pdf(beta.cdf(x,best_beta_params[0],best_beta_params[1]))
+            best_drug_index = 0
+        else:
+            candidate_beta_params = drug['success_count'] + 1, drug['failure_count'] + 1
+            if(candidate_beta_params == best_beta_params):
+                continue
+            candidate_a = candidate_beta_params[0]
+            candidate_b = candidate_beta_params[1]
+            probability_sum = 0
+            for i,x_i in enumerate(x[:-1]):
+                if(x_i < 1):
+                    probability_sum = probability_sum + best_beta_pdf[i] * ( 1 - beta.cdf(x[i + 1], candidate_a, candidate_b))
+            if(probability_sum > 0.5):
+                best_beta_params = candidate_beta_params
+                best_beta_pdf = cdf_to_pdf(beta.cdf(x,best_beta_params[0],best_beta_params[1]))
+                best_drug_index = drug_index
+    return best_drug_index
+
+strategies = [("greedy_number",greedy_number_of_success),("greedy_rate",greedy_rate_of_success),("beta_strategy",beta_strategy),("beta_with_naive_exploration",beta_strategy_with_naive_exploration)]
+
+def cdf_to_pdf(cdf):
+    size = len(cdf)
+    pdf = []
+    for index,cdf_i in enumerate(cdf[1:]):
+        pdf.append(cdf_i - cdf[index])
+    pdf.append(1 - np.sum(pdf))
+    return pdf
