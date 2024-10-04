@@ -9,20 +9,20 @@ class DoctorGame:
         if rates is None:
             self.drugs = {
                 drug: {
-                    "success_rate": rates[drug_index],
-                    "success_count": 0,
-                    "failure_count": 0
-                }
-                for drug_index,drug in enumerate(drug_names)
-            }
-        else:
-            self.drugs = {
-                drug: {
                     "success_rate": random.uniform(0.1, 0.9),
                     "success_count": 0,
                     "failure_count": 0
                 }
                 for drug in drug_names
+            }
+        else:
+            self.drugs = {
+                drug: {
+                    "success_rate": rates[drug_index],
+                    "success_count": 0,
+                    "failure_count": 0
+                }
+                for drug_index, drug in enumerate(drug_names)
             }
         self.total_success_count = 0
         self.total_failure_count = 0
@@ -85,7 +85,7 @@ class DoctorGame:
                 print(f"{j}. {drug} (Effective Treatments: {stats['success_count']}, Ineffective Treatments: {stats['failure_count']})")
 
             choice = int(input(f"Choose a drug (1-{len(self.drugs)}): "))
-            result_info = self.treat_patient(choice)
+            result_info = self.treat_patient(choice - 1)
             print(f"Patient {i+1}: {'Success' if result_info['result'] else 'Failure'} with {result_info['drug']}")
 
         # Display final score and drug success rates
