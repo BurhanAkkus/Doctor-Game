@@ -23,7 +23,7 @@ class DoctorGame:
         Treat a patient by selecting a drug based on the provided choice, and update the score.
         Return the outcome of the treatment without revealing the success rate.
         """
-        selected_drug = list(self.drugs.keys())[drug_choice - 1]
+        selected_drug = list(self.drugs.keys())[drug_choice]
         success_chance = self.drugs[selected_drug]["success_rate"]
 
         # Determine if the treatment was successful
