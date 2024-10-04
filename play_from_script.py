@@ -1,5 +1,6 @@
+from Strategies import strategies
 from game_engine import DoctorGame
-
+import Strategies
 
 def print_result(game_result):
     print(f"Game result: Effective Treatments : {game_result[0]}\n"
