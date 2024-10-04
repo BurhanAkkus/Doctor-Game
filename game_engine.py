@@ -91,8 +91,7 @@ class DoctorGame:
             # Let the script decide the drug choice for each patient based on round history and drug performance
             drug_choice = choice_function(self.get_drug_performance())  # Provide round history and drug performance to the script
             result_info = self.treat_patient(drug_choice)
-            print(f"Patient {i+1}: {'Success' if result_info['result'] else 'Failure'} with {result_info['drug']}")
-
-        # Display final score and drug success rates
-        print(f"\nFinal Score: {self.total_success_count} successes, {self.total_failure_count} failures.")
         self.display_drug_success_rates()
+        return self.total_success_count, self.total_failure_count, self.total_success_count / (
+                    self.total_success_count + self.total_failure_count)
+
