@@ -21,31 +21,31 @@ def cdf_to_pdf(cdf):
     return pdf
 
 def beta_variance_exploration(drug_performance,num_patients):
-
-    permutation = list(range(len(drug_performance)))
-    random.shuffle(permutation)
-    remaining_rounds = num_patients - total_num_of_rounds_played(drug_performance)
-    for i in permutation:
-        drug = drug_performance[list(drug_performance.keys())[i]]
+    variances = []
+    for drug_index,drug_name in enumerate(drug_performance):
+        drug = drug_performance[drug_name]
         a = drug['success_count'] + 1
         b = drug['failure_count'] + 1
-        variance = beta.stats(a, b, moments='v')
+        variances.append((drug_index,beta.stats(a,b,moments='v')))
+    remaining_rounds = num_patients - total_num_of_rounds_played(drug_performance)
+    variances.sort(key= lambda d: d[1])
+    for (drug_index,variance) in variances:
         if(random.random() < (variance / MAX_BETA_VARIANCE * remaining_rounds / num_patients)):
-            return i
+            return drug_index
     return -1
 
 def beta_variance_squared_exploration(drug_performance,num_patients):
-
-    permutation = list(range(len(drug_performance)))
-    random.shuffle(permutation)
-    remaining_rounds = num_patients - total_num_of_rounds_played(drug_performance)
-    for i in permutation:
-        drug = drug_performance[list(drug_performance.keys())[i]]
+    variances = []
+    for drug_index, drug_name in enumerate(drug_performance):
+        drug = drug_performance[drug_name]
         a = drug['success_count'] + 1
         b = drug['failure_count'] + 1
-        variance = beta.stats(a, b, moments='v')
-        if(random.random() < ( (variance / MAX_BETA_VARIANCE) ** 2 * remaining_rounds / num_patients)):
-            return i
+        variances.append((drug_index, beta.stats(a, b, moments='v')))
+    remaining_rounds = num_patients - total_num_of_rounds_played(drug_performance)
+    variances.sort(key=lambda d: d[1])
+    for (drug_index, variance) in variances:
+        if (random.random() < ( (variance / MAX_BETA_VARIANCE) ** 2 * remaining_rounds / num_patients)):
+            return drug_index
     return -1
 
 
