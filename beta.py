@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 alpha1 = int(input())
 beta_param1 = int(input())
 
+print(beta.stats(alpha1, beta_param1, moments='v'))
+
 # Generate a range of x values between 0 and 1 (since Beta is defined in this range)
 x = np.linspace(0, 1, 100)
 
@@ -23,6 +25,7 @@ plt.figure(figsize=(10, 5))
 alpha2 = int(input())
 beta_param2 = int(input())
 
+print(beta.stats(alpha2, beta_param2, moments='mvsk'))
 # Generate a range of x values between 0 and 1 (since Beta is defined in this range)
 x = np.linspace(0, 1, 100)
 
