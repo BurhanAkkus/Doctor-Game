@@ -99,12 +99,22 @@ def thompson_sampling_one_shot(drug_performance,num_patients):
         beta_predicts.append(beta.rvs(drug['success_count'] + 1,drug['failure_count'] + 1,size=1)[0])
     return beta_predicts.index(max(beta_predicts))
 
+def thompson_sampling_many_shot(drug_performance,num_patients):
+    beta_predicts = []
+    sampling_size = 1000
+    for drug_name in drug_performance:
+        drug = drug_performance[drug_name]
+        average = np.sum(beta.rvs(drug['success_count'] + 1,drug['failure_count'] + 1,size=sampling_size))/sampling_size
+        beta_predicts.append(average)
+    return beta_predicts.index(max(beta_predicts))
 
 strategies = [("greedy_number",greedy_number_of_success),
               ("greedy_rate",greedy_rate_of_success),
               ("beta_strategy",beta_strategy),
               ("beta_with_naive_exploration",beta_strategy_with_naive_exploration),
               ("thompson_sampling",thompson_sampling)]
+              ("thompson_sampling_one_shot", thompson_sampling_one_shot),
+              ("thompson_sampling_many_shot", thompson_sampling_many_shot)]
 
 def cdf_to_pdf(cdf):
     size = len(cdf)
