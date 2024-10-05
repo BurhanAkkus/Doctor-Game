@@ -113,32 +113,7 @@ def beta_strategy_with_naive_exploration(drug_performance,num_patients):
         drug = drug_performance[drug_name]
         if drug['success_count'] == 0 and drug['failure_count'] == 0:
             return i  # Choose an untried drug
-    best_beta_params = None
-    resolution = 100
-    x = np.linspace(0, 1, resolution)
-    dx = 1 / resolution
-    best_drug_index = -1
-    for drug_index,drug_name in enumerate(drug_performance):
-        drug = drug_performance[drug_name]
-        if(best_beta_params == None):
-            best_beta_params = drug['success_count'] + 1, drug['failure_count'] + 1
-            best_beta_pdf = cdf_to_pdf(beta.cdf(x,best_beta_params[0],best_beta_params[1]))
-            best_drug_index = 0
-        else:
-            candidate_beta_params = drug['success_count'] + 1, drug['failure_count'] + 1
-            if(candidate_beta_params == best_beta_params):
-                continue
-            candidate_a = candidate_beta_params[0]
-            candidate_b = candidate_beta_params[1]
-            probability_sum = 0
-            for i,x_i in enumerate(x[:-1]):
-                if(x_i < 1):
-                    probability_sum = probability_sum + best_beta_pdf[i] * ( 1 - beta.cdf(x[i + 1], candidate_a, candidate_b))
-            if(probability_sum > 0.5):
-                best_beta_params = candidate_beta_params
-                best_beta_pdf = cdf_to_pdf(beta.cdf(x,best_beta_params[0],best_beta_params[1]))
-                best_drug_index = drug_index
-    return best_drug_index
+    return beta_strategy(drug_performance,num_patients)
 
 def beta_strategy_with_variance_dependant_exploration(drug_performance, num_patients):
     exploration_result = beta_variance_exploration(drug_performance,num_patients)
