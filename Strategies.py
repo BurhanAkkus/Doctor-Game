@@ -25,9 +25,10 @@ def compare_betas(first_pdf,second_params,x):
     a = second_params[0]
     b = second_params[1]
     probability_sum = 0
+    candidate_beta = beta(a,b)
     for i, x_i in enumerate(x[:-1]):
         if (x_i < 1):
-            probability_sum = probability_sum + first_pdf[i] * (1 - beta.cdf(x[i + 1], a, b))
+            probability_sum = probability_sum + first_pdf[i] * (1 - candidate_beta.cdf(x[i + 1]))
     return probability_sum > 0.5
 
 
