@@ -108,11 +108,13 @@ def thompson_sampling_many_shot(drug_performance,num_patients):
         beta_predicts.append(average)
     return beta_predicts.index(max(beta_predicts))
 
-strategies = [("greedy_number",greedy_number_of_success),
-              ("greedy_rate",greedy_rate_of_success),
+
+strategies = [("greedy_number_of_success",greedy_number_of_success),
+              ("greedy_rate_of_success",greedy_rate_of_success),
               ("beta_strategy",beta_strategy),
               ("beta_with_naive_exploration",beta_strategy_with_naive_exploration),
-              ("thompson_sampling",thompson_sampling)]
+              ("beta_strategy_with_variance_dependant_exploration", beta_strategy_with_variance_dependant_exploration),
+              ("beta_strategy_with_variance_square_dependant_exploration", beta_strategy_with_variance_square_dependant_exploration),
               ("thompson_sampling_one_shot", thompson_sampling_one_shot),
               ("thompson_sampling_many_shot", thompson_sampling_many_shot)]
 
