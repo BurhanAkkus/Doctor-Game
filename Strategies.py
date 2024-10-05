@@ -1,7 +1,7 @@
 from scipy.stats import beta
 import numpy as np
 # Example script function to decide the drug choice based on all previous round info and drug performance
-def greedy_number_of_success(drug_performance):
+def greedy_number_of_success(drug_performance,num_patients):
     """
     This function receives the history of all previous rounds and returns the choice for the next round.
     It also receives the success and failure counts for each drug.
@@ -16,7 +16,7 @@ def greedy_number_of_success(drug_performance):
     best_drug = max(drug_performance, key=lambda d: drug_performance[d]['success_count'])
     return list(drug_performance).index(best_drug) + 1
 
-def greedy_rate_of_success(drug_performance):
+def greedy_rate_of_success(drug_performance,num_patients):
     """
     This function receives the history of all previous rounds and returns the choice for the next round.
     It also receives the success and failure counts for each drug.
@@ -32,7 +32,7 @@ def greedy_rate_of_success(drug_performance):
                 drug_performance[d]['success_count'] + drug_performance[d]['failure_count']))
     return list(drug_performance).index(best_drug) + 1
 
-def beta_strategy(drug_performance):
+def beta_strategy(drug_performance,num_patients):
     best_beta_params = None
     resolution = 100
     x = np.linspace(0, 1, resolution)
@@ -59,7 +59,7 @@ def beta_strategy(drug_performance):
                 best_drug_index = drug_index
     return best_drug_index
 
-def beta_strategy_with_naive_exploration(drug_performance):
+def beta_strategy_with_naive_exploration(drug_performance,num_patients):
     for i, drug_name in enumerate(drug_performance):
         drug = drug_performance[drug_name]
         if drug['success_count'] == 0 and drug['failure_count'] == 0:
@@ -92,6 +92,7 @@ def beta_strategy_with_naive_exploration(drug_performance):
     return best_drug_index
 
 def thompson_sampling(drug_performance):
+def thompson_sampling_one_shot(drug_performance,num_patients):
     beta_predicts = []
     for drug_name in drug_performance:
         drug = drug_performance[drug_name]

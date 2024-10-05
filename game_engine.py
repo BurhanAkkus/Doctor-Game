@@ -99,7 +99,7 @@ class DoctorGame:
         """
         for i in range(num_patients):
             # Let the script decide the drug choice for each patient based on round history and drug performance
-            drug_choice = choice_function(self.get_drug_performance())  # Provide round history and drug performance to the script
+            drug_choice = choice_function(self.get_drug_performance(),num_patients)  # Provide round history and drug performance to the script
             result_info = self.treat_patient(drug_choice)
         if(with_feedback):
             self.display_drug_success_rates()
