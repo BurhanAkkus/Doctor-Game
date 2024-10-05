@@ -54,6 +54,8 @@ num_patients = 50
 rates = []
 for i in range(500):
     rates.append(uniform.rvs(size=5))
+
+
 tournament_results = run_tournament(num_games, num_patients,rates)
 
 # Print the results
