@@ -1,5 +1,54 @@
+import random
+
 from scipy.stats import beta
 import numpy as np
+MAX_BETA_VARIANCE = beta.stats(1, 1, moments='v')
+
+# Util functions
+def total_num_of_rounds_played(drug_performance):
+    total_rounds_played = 0
+    for drug_name in drug_performance:
+        drug = drug_performance[drug_name]
+        total_rounds_played = total_rounds_played + drug['success_count'] + drug['failure_count']
+    return total_rounds_played
+
+def cdf_to_pdf(cdf):
+    size = len(cdf)
+    pdf = []
+    for index,cdf_i in enumerate(cdf[1:]):
+        pdf.append(cdf_i - cdf[index])
+    pdf.append(1 - np.sum(pdf))
+    return pdf
+
+def beta_variance_exploration(drug_performance,num_patients):
+
+    permutation = list(range(len(drug_performance)))
+    random.shuffle(permutation)
+    remaining_rounds = num_patients - total_num_of_rounds_played(drug_performance)
+    for i in permutation:
+        drug = drug_performance[list(drug_performance.keys())[i]]
+        a = drug['success_count'] + 1
+        b = drug['failure_count'] + 1
+        variance = beta.stats(a, b, moments='v')
+        if(random.random() < (variance / MAX_BETA_VARIANCE * remaining_rounds / num_patients)):
+            return i
+    return -1
+
+def beta_variance_squared_exploration(drug_performance,num_patients):
+
+    permutation = list(range(len(drug_performance)))
+    random.shuffle(permutation)
+    remaining_rounds = num_patients - total_num_of_rounds_played(drug_performance)
+    for i in permutation:
+        drug = drug_performance[list(drug_performance.keys())[i]]
+        a = drug['success_count'] + 1
+        b = drug['failure_count'] + 1
+        variance = beta.stats(a, b, moments='v')
+        if(random.random() < ( (variance / MAX_BETA_VARIANCE) ** 2 * remaining_rounds / num_patients)):
+            return i
+    return -1
+
+
 # Example script function to decide the drug choice based on all previous round info and drug performance
 def greedy_number_of_success(drug_performance,num_patients):
     """
@@ -91,7 +140,18 @@ def beta_strategy_with_naive_exploration(drug_performance,num_patients):
                 best_drug_index = drug_index
     return best_drug_index
 
-def thompson_sampling(drug_performance):
+def beta_strategy_with_variance_dependant_exploration(drug_performance, num_patients):
+    exploration_result = beta_variance_exploration(drug_performance,num_patients)
+    if(exploration_result != - 1):
+        return exploration_result
+    return beta_strategy(drug_performance,num_patients)
+
+def beta_strategy_with_variance_square_dependant_exploration(drug_performance, num_patients):
+    exploration_result = beta_variance_exploration(drug_performance,num_patients)
+    if(exploration_result != - 1):
+        return exploration_result
+    return beta_strategy(drug_performance,num_patients)
+
 def thompson_sampling_one_shot(drug_performance,num_patients):
     beta_predicts = []
     for drug_name in drug_performance:
@@ -118,10 +178,3 @@ strategies = [("greedy_number_of_success",greedy_number_of_success),
               ("thompson_sampling_one_shot", thompson_sampling_one_shot),
               ("thompson_sampling_many_shot", thompson_sampling_many_shot)]
 
-def cdf_to_pdf(cdf):
-    size = len(cdf)
-    pdf = []
-    for index,cdf_i in enumerate(cdf[1:]):
-        pdf.append(cdf_i - cdf[index])
-    pdf.append(1 - np.sum(pdf))
-    return pdf
