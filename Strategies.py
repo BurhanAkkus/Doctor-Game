@@ -20,6 +20,17 @@ def cdf_to_pdf(cdf):
     pdf.append(1 - np.sum(pdf))
     return pdf
 
+def compare_betas(first_pdf,second_params,x):
+    probability_sum = 0
+    a = second_params[0]
+    b = second_params[1]
+    probability_sum = 0
+    for i, x_i in enumerate(x[:-1]):
+        if (x_i < 1):
+            probability_sum = probability_sum + first_pdf[i] * (1 - beta.cdf(x[i + 1], a, b))
+    return probability_sum > 0.5
+
+
 def beta_variance_exploration(drug_performance,num_patients):
     variances = []
     for drug_index,drug_name in enumerate(drug_performance):
@@ -92,17 +103,12 @@ def beta_strategy(drug_performance,num_patients):
         if(best_beta_params == None):
             best_beta_params = drug['success_count'] + 1, drug['failure_count'] + 1
             best_beta_pdf = cdf_to_pdf(beta.cdf(x,best_beta_params[0],best_beta_params[1]))
+            best_drug_index = 0
         else:
             candidate_beta_params = drug['success_count'] + 1, drug['failure_count'] + 1
             if (candidate_beta_params == best_beta_params):
                 continue
-            candidate_a = candidate_beta_params[0]
-            candidate_b = candidate_beta_params[1]
-            probability_sum = 0
-            for i,x_i in enumerate(x[:-1]):
-                if(x_i < 1):
-                    probability_sum = probability_sum + best_beta_pdf[i] * ( 1 - beta.cdf(x[i + 1], candidate_a, candidate_b))
-            if(probability_sum > 0.5):
+            if (compare_betas(best_beta_pdf, candidate_beta_params, x)):
                 best_beta_params = candidate_beta_params
                 best_beta_pdf = cdf_to_pdf(beta.cdf(x,best_beta_params[0],best_beta_params[1]))
                 best_drug_index = drug_index
