@@ -75,7 +75,7 @@ def greedy_number_of_success(drug_performance,num_patients):
 
     # If all drugs have been tried, choose the one with the highest success count
     best_drug = max(drug_performance, key=lambda d: drug_performance[d]['success_count'])
-    return list(drug_performance).index(best_drug) + 1
+    return list(drug_performance).index(best_drug)
 
 def greedy_rate_of_success(drug_performance,num_patients):
     """
@@ -92,6 +92,7 @@ def greedy_rate_of_success(drug_performance,num_patients):
     best_drug = max(drug_performance, key=lambda d: (drug_performance[d]['success_count']) / (
                 drug_performance[d]['success_count'] + drug_performance[d]['failure_count']))
     return list(drug_performance).index(best_drug) + 1
+    return list(drug_performance).index(best_drug)
 
 def beta_strategy(drug_performance,num_patients):
     best_beta_params = None
