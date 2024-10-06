@@ -91,8 +91,30 @@ def greedy_rate_of_success(drug_performance,num_patients):
     # If all drugs have been tried, choose the one with the highest success count
     best_drug = max(drug_performance, key=lambda d: (drug_performance[d]['success_count']) / (
                 drug_performance[d]['success_count'] + drug_performance[d]['failure_count']))
-    return list(drug_performance).index(best_drug) + 1
     return list(drug_performance).index(best_drug)
+
+def teo_sezen(drug_performance,num_patients):
+    round_num = total_num_of_rounds_played(drug_performance)
+    number_of_drugs = len(drug_performance)
+    success_rates = []
+    for drug_index,drug_name in enumerate(drug_performance):
+        drug = drug_performance[drug_name]
+        if(drug['success_count'] + drug['failure_count'] < (num_patients // 50) / number_of_drugs):
+            return drug_index
+        success_rates.append((drug_index,drug['success_count'] , (drug['success_count'] + drug['failure_count'])))
+    success_rates.sort(key=lambda x: x[1]/x[2],reverse=True)
+    return success_rates[0][0]
+
+def alperen_bayir(drug_performance,num_patients):
+    total_round = total_num_of_rounds_played(drug_performance)
+    if  total_round <= num_patients//num_patients:
+        return total_round % len(drug_performance)
+    success_rates = []
+    for drug_index, drug_name in enumerate(drug_performance):
+        drug = drug_performance[drug_name]
+        success_rates.append((drug_index, drug['success_count'], (drug['success_count'] + drug['failure_count'])))
+    success_rates.sort(key=lambda x: 0 if (x[2] == 0) else x[1]/x[2],reverse=True)
+    return success_rates[0][0]
 
 def beta_strategy(drug_performance,num_patients):
     best_beta_params = None
@@ -159,5 +181,7 @@ strategies = [("greedy_number_of_success",greedy_number_of_success),
               ("beta_strategy_with_variance_dependant_exploration", beta_strategy_with_variance_dependant_exploration),
               ("beta_strategy_with_variance_square_dependant_exploration", beta_strategy_with_variance_square_dependant_exploration),
               ("thompson_sampling_one_shot", thompson_sampling_one_shot),
-              ("thompson_sampling_many_shot", thompson_sampling_many_shot)]
+              ("thompson_sampling_many_shot", thompson_sampling_many_shot),
+              ("teo_sezen",teo_sezen),
+              ("alperen_bayir",alperen_bayir)]
 
